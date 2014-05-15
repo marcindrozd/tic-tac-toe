@@ -15,11 +15,28 @@ class Board < Hash
 		puts "   - - -"
 		puts "c  #{@board[:c1]}|#{@board[:c2]}|#{@board[:c3]}"
 	end
+
+	def update_board(cell, symbol)
+		@board[cell] = symbol
+	end
+
+	def valid_move?(cell)
+		if @board.has_key?(cell) && @board[cell] == " "
+			true
+		else
+			false
+		end
+	end
+
 end
 
 class Player
 	def initialize(symbol)
 		@symbol = symbol
+	end
+
+	def get_symbol
+		@symbol
 	end
 end
 
@@ -28,6 +45,7 @@ class Game
 		@game = Board.new
 		@playerX = Player.new("X")
 		@playerO = Player.new("O")
+		@currentplayer = @playerX
 		@game.draw
 	end
 
@@ -38,17 +56,20 @@ class Game
 	end
 
 	def prompt
-		puts "Please select empty cell for your next move (e.g. a1, c3):"
-		@move = gets.chomp.to_sym
-		puts @move.inspect
+		until valid_move?
+			puts "Please select empty cell for your next move (e.g. a1, c3):"
+			@cell = gets.chomp.to_sym
+		end
+		@game.update_board(@cell, @currentplayer.get_symbol)
+		@game.draw
 	end
 
 	def valid_move?
-		if @game.has_key?(@move)# && @game[@move] == " "
+		if @game.valid_move?(@cell)
 			true
 		else
 			puts "This move is not valid. Please try again!"
-			puts @move.inspect
+			false
 		end
 	end
 
@@ -77,4 +98,3 @@ end
 
 b = Game.new
 b.prompt
-b.valid_move?
