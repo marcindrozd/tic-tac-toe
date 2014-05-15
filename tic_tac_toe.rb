@@ -45,26 +45,13 @@ class Board < Hash
 
 	def board_full? 
 		if @board[:a1] != " " && @board[:a2] != " " && @board[:a3] != " " &&
-			@board[:a1] != " " && @board[:a2] != " " && @board[:a3] != " " &&
-			@board[:a1] != " " && @board[:a2] != " " && @board[:a3] != " "
+			@board[:b1] != " " && @board[:b2] != " " && @board[:b3] != " " &&
+			@board[:c1] != " " && @board[:c2] != " " && @board[:c3] != " "
 			true
 		else
 			false
 		end
 	end
-
-	# def winning_conditions
-	# 	@conditions = [
-	# 		[:a1, :a2, :a3],
-	# 		[:b1, :b2, :b3],
-	# 		[:c1, :c2, :c3],
-	# 		[:a1, :b1, :c1],
-	# 		[:a2, :b2, :c2],
-	# 		[:a3, :b3, :c3],
-	# 		[:a1, :b2, :c3],
-	# 		[:a3, :b2, :c1]
-	# 	]
-	# end
 
 end
 
@@ -89,13 +76,18 @@ class Game
 	def play
 		@currentplayer = [@playerX, @playerO].sample
 		@game.draw
-		until win?
+		while !@game.board_full?
 			get_move
 			@game.draw
+			if win?
+				winner
+				break
+			elsif @game.board_full?
+				puts "It's a tie!"
+				break
+			end
 			changePlayer
 		end
-		changePlayer
-		winner
 	end
 
 	def win?
