@@ -28,6 +28,44 @@ class Board < Hash
 		end
 	end
 
+	def check_win
+		if (@board[:a1] == @board[:a2] && @board[:a2] == @board[:a3] && @board[:a1] != " ") ||
+			(@board[:b1] == @board[:b2] && @board[:b2] == @board[:b3] && @board[:b1] != " ") ||
+			(@board[:c1] == @board[:c2] && @board[:c2] == @board[:c3] && @board[:c1] != " ") ||
+			(@board[:a1] == @board[:b1] && @board[:b1] == @board[:c1] && @board[:a1] != " ") ||
+			(@board[:a2] == @board[:b2] && @board[:b2] == @board[:c2] && @board[:a2] != " ") ||
+			(@board[:a3] == @board[:b3] && @board[:b3] == @board[:c3] && @board[:a3] != " ") ||
+			(@board[:a1] == @board[:b2] && @board[:b2] == @board[:c3] && @board[:a1] != " ") ||
+			(@board[:a3] == @board[:b2] && @board[:b2] == @board[:c1] && @board[:a3] != " ")
+			true
+		else
+			false
+		end
+	end
+
+	def board_full? 
+		if @board[:a1] != " " && @board[:a2] != " " && @board[:a3] != " " &&
+			@board[:a1] != " " && @board[:a2] != " " && @board[:a3] != " " &&
+			@board[:a1] != " " && @board[:a2] != " " && @board[:a3] != " "
+			true
+		else
+			false
+		end
+	end
+
+	# def winning_conditions
+	# 	@conditions = [
+	# 		[:a1, :a2, :a3],
+	# 		[:b1, :b2, :b3],
+	# 		[:c1, :c2, :c3],
+	# 		[:a1, :b1, :c1],
+	# 		[:a2, :b2, :c2],
+	# 		[:a3, :b3, :c3],
+	# 		[:a1, :b2, :c3],
+	# 		[:a3, :b2, :c1]
+	# 	]
+	# end
+
 end
 
 class Player
@@ -45,56 +83,50 @@ class Game
 		@game = Board.new
 		@playerX = Player.new("X")
 		@playerO = Player.new("O")
-		@currentplayer = @playerX
-		@game.draw
+		puts "Welcome to the game of Tic Tac Toe!"
 	end
 
 	def play
+		@currentplayer = [@playerX, @playerO].sample
+		@game.draw
+		until win?
+			get_move
+			@game.draw
+			changePlayer
+		end
+		changePlayer
+		winner
 	end
 
 	def win?
+		@game.check_win 
 	end
 
-	def prompt
-		until valid_move?
-			puts "Please select empty cell for your next move (e.g. a1, c3):"
+	def winner
+		puts "Player #{@currentplayer.get_symbol} wins!"
+	end
+
+	def get_move
+		puts "Player #{@currentplayer.get_symbol} move"
+		puts "Please select empty cell for your next move (e.g. a1, c3):"
+		@cell = gets.chomp.to_sym
+		while !@game.valid_move?(@cell)
+			puts "This move is not valid. Cell already taken or out of range!"
+			puts "Please try again (e.g. a1, c3):"
 			@cell = gets.chomp.to_sym
 		end
 		@game.update_board(@cell, @currentplayer.get_symbol)
-		@game.draw
-	end
-
-	def valid_move?
-		if @game.valid_move?(@cell)
-			true
-		else
-			puts "This move is not valid. Please try again!"
-			false
-		end
 	end
 
 	def changePlayer
-		if currentplayer == @playerX
-			currentplayer = @playerO
+		if @currentplayer == @playerX
+			@currentplayer = @playerO
 		else
-			currentplayer = @playerX
+			@currentplayer = @playerX
 		end
-	end
-
-	def winning_conditions
-		@conditions = [
-			[:a1, :a2, :a3],
-			[:b1, :b2, :b3],
-			[:c1, :c2, :c3],
-			[:a1, :b1, :c1],
-			[:a2, :b2, :c2],
-			[:a3, :b3, :c3],
-			[:a1, :b2, :c3],
-			[:a3, :b2, :c1]
-		]
 	end
 
 end
 
-b = Game.new
-b.prompt
+new_game = Game.new
+new_game.play
